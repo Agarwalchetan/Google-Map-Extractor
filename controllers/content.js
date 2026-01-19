@@ -18,9 +18,10 @@ $(() => {
 		console.log(local);
 		if (local.status) {
 			console.log("Starting Process");
-			
 			// openEachStore();
-			extractResults(); 
+			setTimeout(() => {
+				extractResults();
+			}, 4000);
 		}
 	});
 });
@@ -67,6 +68,21 @@ function extractResults(app_ini_state=true) {
 	})
 }
 
+function getResultsFromAppInitializationState() {
+	try {
+		if (window.APP_INITIALIZATION_STATE && window.APP_INITIALIZATION_STATE[3] && window.APP_INITIALIZATION_STATE[3][2]) {
+			var filteredData = window.APP_INITIALIZATION_STATE[3][2];
+			var ew = filteredData && filteredData.substr ? filteredData.substr(4) : null;
+			if (ew) {
+				return leesCollection(ew);
+			}
+		}
+	} catch (e) {
+		console.log(e);
+	}
+	return [];
+}
+
 function saveResults(callback, app_ini_state) {
 	/**
 	 * Saves the GoogleMaps result to storage.
@@ -77,10 +93,10 @@ function saveResults(callback, app_ini_state) {
 		var results;
 
 		if (app_ini_state) {
-			// first time, scrape using window.APP_INIITIALIZATION
-
-			// extracting data from JSON
-			results = voegToeAanCollection(document.getElementsByTagName('html')[0].innerHTML);
+			results = getResultsFromAppInitializationState();
+			if (!results || !results.length) {
+				results = voegToeAanCollection(document.getElementsByTagName('html')[0].innerHTML);
+			}
 
 		} else {
 
@@ -100,6 +116,10 @@ function saveResults(callback, app_ini_state) {
 
 		}
 
+		if (!Array.isArray(results)) {
+			results = [];
+		}
+
 		// saving to storage
 		saveToLocal(callback, results);
 
@@ -108,6 +128,12 @@ function saveResults(callback, app_ini_state) {
 
 function saveToLocal(callback, results) {
 	$box.getLocal(local => {
+		if (!results || !results.length) {
+			setTimeout(() => {
+				callback(local);
+			}, 500);
+			return;
+		}
 
 		for(let i=0; i<results.length; i++) {
 			data = results[i];
@@ -235,7 +261,14 @@ function scrollPage() {
 	}
 	console.log('** Scrolling page...', minutesDifference);
 
-	document.querySelectorAll(".m6QErb .DxyBCb .kA9KIf")[0].scrollTop = 1000000;
+	var feed = document.querySelector('[role="feed"]');
+	if (!feed) {
+		var candidates = document.querySelectorAll('.m6QErb');
+		feed = candidates && candidates.length ? candidates[0] : null;
+	}
+	if (feed) {
+		feed.scrollTop = 1000000;
+	}
 	return;
 }
 

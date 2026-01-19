@@ -140,7 +140,7 @@
                     <button
                         ng-class="local.status ?'ui button rounded-0 d-inline bg-red text-white' :'ui button rounded-0  d-inline bg-green text-white' "
                         ng-disabled="!local.taskList.length "
-                        ng-click="sendMessage(local.status ? 'stop' : 'start'); local.status = !local.status; saveLocal();">
+                        ng-click="local.status = !local.status; saveLocal(); sendMessage(local.status ? 'start' : 'stop');">
                         {{local.status ? 'Stop' : 'Start'}} Extracting
                     </button>
                     <button class="ui button rounded-0  d-inline basic text-white"
