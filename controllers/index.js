@@ -565,28 +565,6 @@ $(() => {
         local.remote_manifest = null;
         local.ad = null;
         $box.setLocal(local);
-        
-
-        setTimeout(async () => {
-            await fetch(`https://jmjdigitalworld.com/api/gmapparser/version.php`)
-            .then(res => res.json())
-            .then(v => {
-                if (v.version_number !== null && +v.version_number > CURRENT_VERSION) {
-                    // update required
-                    local.software_pcolor = "white";
-                    local.software_scolor = "white";
-                    
-                    local.showDownloadExtensionModal = true;
-                    local.download_link = v.download_link;
-                    $box.setLocal(local);
-                }})
-            .catch(er => {
-                console.log(er);
-                console.log('Version check unsucessfull');
-            })
-
-        }, 5 * 1000)
-        
     })
 
 
